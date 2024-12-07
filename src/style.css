@@ -8,3 +8,7 @@ canvas {
   height: 100%;
   display: block;
 }
+
+canvas:focus {
+  outline: none;
+}

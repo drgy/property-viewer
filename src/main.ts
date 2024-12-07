@@ -1,9 +1,15 @@
 import * as three from 'three';
 import { GLTFLoader, GLTF } from 'three/addons/loaders/GLTFLoader.js';
-import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
+import { Octree } from 'three/addons/math/Octree.js';
+import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
+import { Capsule } from 'three/addons/math/Capsule.js';
 
 const WORLD_SIZE = 200;
+const MOVEMENT_SPEED = 4;
+const MOUSE_SPEED = 0.002;
+const MIN_PITCH = 0;
+const MAX_PITCH = Math.PI;
 
 const canvas = document.querySelector('canvas')!;
 const renderer = new three.WebGLRenderer({ antialias: true, canvas });
@@ -18,17 +24,52 @@ camera.position.set(0, 1.8, 5);
 const scene = new three.Scene();
 scene.add(new three.GridHelper(WORLD_SIZE, WORLD_SIZE));
 
-const controls = new FirstPersonControls(camera, canvas);
-controls.movementSpeed = 2;
-controls.lookSpeed = 0.5;
-
 const resize_observer = new ResizeObserver(() => {
     renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
     camera.aspect = canvas.clientWidth / canvas.clientHeight;
     camera.updateProjectionMatrix();
-    controls.handleResize();
 });
 resize_observer.observe(canvas);
+
+const input = new Map<string, boolean>();
+const camera_euler = new three.Euler(0, 0, 0, 'YXZ');
+
+canvas.addEventListener('keydown', e => input.set(e.key, true));
+canvas.addEventListener('keyup', e => input.set(e.key, false));
+canvas.addEventListener('pointerdown', () => canvas.requestPointerLock());
+canvas.addEventListener('pointerup', () => document.exitPointerLock());
+canvas.addEventListener('pointermove', e => {
+    if (document.pointerLockElement === canvas) {
+        camera_euler.setFromQuaternion(camera.quaternion);
+
+        camera_euler.y -= e.movementX * MOUSE_SPEED;
+        camera_euler.x -= e.movementY * MOUSE_SPEED;
+
+        camera_euler.x = Math.max((Math.PI / 2) - MAX_PITCH, Math.min((Math.PI / 2) - MIN_PITCH, camera_euler.x));
+
+        camera.quaternion.setFromEuler(camera_euler);
+    }
+});
+
+const octree = new Octree();
+const player_collider = new Capsule(new three.Vector3(0, 0, 0), new three.Vector3(0, 1.8, 0), 0.2);
+const velocity = new three.Vector3();
+const direction = new three.Vector3();
+
+function forward(forward: three.Vector3): three.Vector3 {
+    camera.getWorldDirection(forward);
+    forward.y = 0;
+    forward.normalize();
+    return forward;
+}
+
+function right(right: three.Vector3): three.Vector3 {
+    camera.getWorldDirection(right);
+    right.y = 0;
+    right.normalize();
+    right.cross(camera.up);
+    return right;
+}
 
 const directional_light = new three.DirectionalLight(0xffffff, 10);
 directional_light.position.set(-10, 4, 8);
@@ -94,13 +135,45 @@ load_manager.onLoad = () => {
         axes.renderOrder = 1;
         gltf.scene.add(axes);
     }
+
+    octree.fromGraphNode(gltf_models.get('./room.glb')!.scene);
+    scene.add(new OctreeHelper(octree));
 }
 
 const clock = new three.Clock();
 
 function render() {
-    controls.activeLook = controls.mouseDragOn;
-    controls.update(clock.getDelta());
+    velocity.set(0, 0, 0);
+
+    if (input.get('w')) {
+        velocity.add(forward(direction));
+    }
+
+    if (input.get('s')) {
+        velocity.sub(forward(direction));
+    }
+
+    if (input.get('d')) {
+        velocity.add(right(direction));
+    }
+
+    if (input.get('a')) {
+        velocity.sub(right(direction));
+    }
+
+    velocity.normalize();
+    velocity.multiplyScalar(MOVEMENT_SPEED * clock.getDelta());
+
+    player_collider.translate(velocity);
+
+    const collision = octree.capsuleIntersect(player_collider);
+
+    if (collision && collision.depth >= 0.0001) {
+        player_collider.translate(collision.normal.multiplyScalar(collision.depth));
+    }
+
+    camera.position.copy(player_collider.end);
+
     renderer.render(scene, camera);
     requestAnimationFrame(render);
 }
