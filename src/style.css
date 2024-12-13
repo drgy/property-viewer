@@ -1,4 +1,14 @@
+@font-face {
+  font-family: 'Argon';
+  src: url('../fonts/argon.woff2');
+}
+
+[hidden] {
+  display: none !important;
+}
+
 html, body {
+  font-family: 'Argon', system-ui;
   margin: 0;
   height: 100%;
 }
@@ -11,4 +21,105 @@ canvas {
 
 canvas:focus {
   outline: none;
+}
+
+div.inspector {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(20, 20, 20, 0.5);
+  backdrop-filter: blur(0.5rem) contrast(30%);
+  width: 22rem;
+}
+
+.inspector .navbar {
+  opacity: 0.75;
+  background: rgba(20, 20, 20, 0.5);
+}
+
+.inspector h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin: 0;
+  padding: 0.5rem;
+  color: #ffffff;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  line-height: 2rem;
+  vertical-align: middle;
+}
+
+.inspector .back {
+  font-size: 3rem;
+  line-height: 2rem;
+  font-weight: 300;
+  margin: -0.5rem 0 0 0;
+  padding: 0 0 0 0.5rem;
+  color: #ffffff;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.inspector h2 {
+  font-size: 1.2rem;
+  padding: 0.2rem 1rem;
+  font-weight: 300;
+  margin: 0;
+  color: #ffffff;
+  opacity: 0.75;
+}
+
+.inspector .colors, .inspector .materials {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.2rem 1rem;
+}
+
+.inspector .preview {
+  width: 5rem;
+  height: 5rem;
+  cursor: pointer;
+}
+
+.inspector .tab-container > div {
+  max-height: min(80vh, 20rem);
+}
+
+.inspector .general p {
+  font-size: 1rem;
+  font-weight: 300;
+  color: #ffffff;
+  line-height: 1.25rem;
+  margin: 0;
+}
+
+.inspector .description {
+  padding: 0.5rem 1rem;
+  text-indent: 2rem;
+}
+
+.inspector .general-data {
+  display: flex;
+  padding: 1rem 1rem;
+  align-items: center;
+}
+
+.inspector .general-data > div {
+  flex: auto;
+}
+
+.inspector .general-data > div p {
+  font-weight: 500;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.inspector svg {
+  color: #ffffff;
+  display: inline-block;
+  vertical-align: middle;
+  padding-right: 0.2rem;
 }

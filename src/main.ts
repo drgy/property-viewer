@@ -1,37 +1,39 @@
 import * as three from 'three';
 import data from './data.json';
-import {Player} from "./player.ts";
+import {Viewer} from "./viewer.ts";
 import {Input} from "./input.ts";
 import {Property} from "./property.ts";
+import {Context} from "./context.ts";
+import {Loader} from "./loader.ts";
 
 const canvas = document.querySelector('canvas')!;
-const renderer = new three.WebGLRenderer({ antialias: true, canvas });
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = three.PCFSoftShadowMap;
-renderer.toneMapping = three.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1;
-
-const input = new Input(canvas);
-const player = new Player(input);
-
-const scene = new three.Scene();
-scene.add(new three.GridHelper(100, 100));
+Context.renderer = new three.WebGLRenderer({ antialias: true, canvas });
+Context.renderer.shadowMap.enabled = true;
+Context.renderer.shadowMap.type = three.PCFSoftShadowMap;
+Context.renderer.toneMapping = three.ACESFilmicToneMapping;
+Context.renderer.toneMappingExposure = 1;
 
 const resize_observer = new ResizeObserver(() => {
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-    player.camera.aspect = canvas.clientWidth / canvas.clientHeight;
-    player.camera.updateProjectionMatrix();
+    Context.renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
 });
 resize_observer.observe(canvas);
 
-const property = new Property(data[0], scene);
+Context.scene = new three.Scene();
+Context.scene.add(new three.GridHelper(100, 100));
+
+const input = new Input(canvas);
+const player = new Viewer(input);
+
+Loader.on_load(() => player.reset());
+
+Context.property = new Property(data[0]);
 
 const clock = new three.Clock();
 
 function render() {
-    player.update(clock.getDelta(), property.collider);
+    player.update(clock.getDelta());
 
-    renderer.render(scene, player.camera);
+    Context.renderer.render(Context.scene, player.camera);
     requestAnimationFrame(render);
 }
 

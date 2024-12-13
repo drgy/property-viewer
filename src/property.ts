@@ -1,19 +1,42 @@
 import * as three from 'three';
 import { Loader } from "./loader.ts";
 import { Octree } from 'three/addons/math/Octree.js';
+import {Context} from "./context.ts";
+import {Inspector} from "./inspector.ts";
 
 export class Property extends three.Group {
-    protected _scene: three.Scene;
+    protected _inspector: Inspector;
     protected _hdr = new three.DataTexture();
     protected _collider = new Octree();
+    protected _interactive: three.Object3D[] = [];
+    protected _materials = new Map<string, three.MeshStandardMaterial>();
+    protected _spawn = {
+        position: new three.Vector3(),
+        rotation: new three.Euler()
+    };
+    protected _info: PropertyInfo;
+
+    public get info(): PropertyInfo {
+        return this._info;
+    }
+
+    public get spawn_position(): three.Vector3 {
+        return this._spawn.position;
+    }
+
+    public get spawn_rotation(): three.Euler {
+        return this._spawn.rotation;
+    }
 
     public get collider(): Octree {
         return this._collider;
     }
 
-    constructor(data: PropertyData, scene: three.Scene) {
+    constructor(data: PropertyData) {
         super();
-        this._scene = scene;
+
+        this._info = data.info;
+        this._inspector = new Inspector(this);
 
         Loader.load_hdr(data.hdr.file);
         Loader.load_gltf(data.models.map(model => model.file));
@@ -21,8 +44,8 @@ export class Property extends three.Group {
             this._hdr = load_data.hdr;
             this._hdr.mapping = three.EquirectangularReflectionMapping;
             this._hdr.needsUpdate = true;
-            this._scene.background = this._hdr;
-            this._scene.backgroundRotation.set(data.hdr.rotation.x, data.hdr.rotation.y, data.hdr.rotation.z);
+            Context.scene.background = this._hdr;
+            Context.scene.backgroundRotation.set(data.hdr.rotation.x, data.hdr.rotation.y, data.hdr.rotation.z);
 
             for (const model of load_data.models) {
                 this.add(model);
@@ -32,7 +55,7 @@ export class Property extends three.Group {
                 axes.rotation.copy(model.rotation);
                 axes.material.depthTest = false;
                 axes.renderOrder = 1;
-                this._scene.add(axes);
+                Context.scene.add(axes);
             }
 
             this.traverse(object => {
@@ -42,17 +65,42 @@ export class Property extends three.Group {
                     if (object.material.name !== 'Glass') {
                         object.castShadow = true;
                     }
+
+                    if (Array.isArray(object.material)) {
+                        for (const material of object.material) {
+                            if (!this._materials.has(material.name)) {
+                                this._materials.set(material.name, material.clone());
+                            }
+                        }
+                    } else {
+                        if (!this._materials.has(object.material.name)) {
+                            this._materials.set(object.material.name, object.material.clone());
+                        }
+                    }
                 }
-            })
+
+                if (object.name in data.config_options) {
+                    this._interactive.push(object);
+                }
+            });
+
+            for (const object of this._interactive) {
+                object.userData = {
+                    materials: data.config_options[object.name].materials.map(material => { return { material: this._materials.get(material.name), tints: material.tints }; }),
+                };
+            }
 
             this._collider.fromGraphNode(this);
-            this._scene.add(this);
+            Context.scene.add(this);
         });
+
+        this._spawn.position.set(data.spawn.position.x, data.spawn.position.y, data.spawn.position.z);
+        this._spawn.rotation.set(data.spawn.rotation.x, data.spawn.rotation.y, data.spawn.rotation.z, 'YXZ');
 
         for (const light of data.lights) {
             switch (light.type) {
                 case LightType.Ambient:
-                    this._scene.add(new three.AmbientLight(light.color, light.intensity));
+                    Context.scene.add(new three.AmbientLight(light.color, light.intensity));
                     break;
                 case LightType.Directional:
                     const directional_light = new three.DirectionalLight(light.color, light.intensity);
@@ -68,14 +116,23 @@ export class Property extends three.Group {
                     directional_light.shadow.normalBias = -0.0001;
                     directional_light.shadow.blurSamples = 16;
                     directional_light.shadow.camera.updateProjectionMatrix();
-                    scene.add(directional_light);
+                    Context.scene.add(directional_light);
                     break;
             }
         }
     }
+
+    public intersection(raycaster: three.Raycaster): three.Intersection[] {
+        return raycaster.intersectObjects(this._interactive);
+    }
+
+    public inspect(object: three.Mesh) {
+        this._inspector.inspect(object);
+    }
 }
 
 export interface PropertyData {
+    info: PropertyInfo;
     hdr: {
         file: string;
         rotation: {
@@ -90,9 +147,32 @@ export interface PropertyData {
     lights: (AmbientLightData | DirectionalLightData)[],
     config_options: {
         [name: string]: {
-            materials: string[]
+            materials: {
+                name: string;
+                tints: string[]
+            }[]
         }
-    }[];
+    };
+    spawn: {
+        position: {
+            x: number;
+            y: number;
+            z: number;
+        },
+        rotation: {
+            x: number;
+            y: number;
+            z: number;
+        }
+    }
+}
+
+export interface PropertyInfo {
+    name: string;
+    price: number;
+    rooms: number;
+    size: number;
+    description: string;
 }
 
 interface AmbientLightData {

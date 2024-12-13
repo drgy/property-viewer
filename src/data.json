@@ -1,5 +1,12 @@
 [
   {
+    "info": {
+      "name": "Seaview apartment",
+      "price": 800000,
+      "rooms": 4,
+      "size": 150,
+      "description": "This spacious 4-room apartment offers stunning sea views and an unbeatable beachfront location. With a modern design and plenty of natural light, it’s the perfect space for seaside living or a serene getaway."
+    },
     "hdr": {
       "file": "./beach.hdr",
       "rotation": {
@@ -16,13 +23,13 @@
     "lights": [
       {
         "type": "ambient",
-        "color": "0xeeeeff",
-        "intensity": 2
+        "color": "#ffffff",
+        "intensity": 1.5
       },
       {
         "type": "directional",
-        "color": "0xffffff",
-        "intensity": 10,
+        "color": "#ffffff",
+        "intensity": 2,
         "position": {
           "x": -10,
           "y": 4,
@@ -35,12 +42,39 @@
         }
       }
     ],
-    "config_options": [
-      {
-        "Walls": {
-          "materials": []
-        }
+    "config_options": {
+      "Wall": {
+        "materials": [
+          {
+            "name": "Plaster",
+            "tints": [ "#ffffff", "#222288", "#882222", "#444444" ]
+          }
+        ]
+      },
+      "Floor": {
+        "materials": [
+          {
+            "name": "Wood floor",
+            "tints": []
+          },
+          {
+            "name": "Marble",
+            "tints": []
+          }
+        ]
       }
-    ]
+    },
+    "spawn": {
+      "position": {
+        "x": 0.577,
+        "y": 0.2,
+        "z": 0
+      },
+      "rotation": {
+        "x": -0.1,
+        "y": 1.57,
+        "z": 0
+      }
+    }
   }
 ]
