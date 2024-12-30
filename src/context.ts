@@ -6,6 +6,7 @@ export class Context {
     protected _renderer: three.WebGLRenderer | undefined;
     protected _scene: three.Scene | undefined;
     protected _property: Property | undefined;
+    protected _mobile = false;
 
     public static get renderer(): three.WebGLRenderer {
         return Context.instance._renderer!;
@@ -29,6 +30,45 @@ export class Context {
 
     public static set property(property: Property | undefined) {
         Context.instance._property = property;
+    }
+
+    public static get mobile(): boolean {
+        return Context.instance._mobile;
+    }
+
+    public static set mobile(mobile: boolean) {
+        Context.instance._mobile = mobile;
+    }
+
+    public static dispose(scene: three.Scene) {
+        scene.traverse(object => {
+            const dispose_textures = (material: three.Material) => {
+                material.map?.dispose();
+                material.metalnessMap?.dispose();
+                material.normalMap?.dispose();
+                material.roughnessMap?.dispose();
+            }
+
+            if (object instanceof three.Mesh) {
+                if (Array.isArray(object.material)) {
+                    for (const material of object.material) {
+                        dispose_textures(material);
+                        material.dispose();
+                    }
+                } else {
+                    dispose_textures(object.material);
+                    object.material.dispose();
+                }
+
+                object.geometry.dispose();
+            }
+        });
+
+        scene.clear();
+
+        if (scene.background instanceof three.Texture) {
+            scene.background.dispose();
+        }
     }
 
     protected static get instance(): Context {

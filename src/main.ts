@@ -15,25 +15,31 @@ Context.renderer.toneMappingExposure = 1;
 
 const resize_observer = new ResizeObserver(() => {
     Context.renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+    Context.mobile = canvas.clientWidth <= 600 || canvas.clientHeight <= 600;
+
+    if (Context.mobile) {
+        document.body.classList.add('mobile');
+    } else {
+        document.body.classList.remove('mobile');
+    }
 });
 resize_observer.observe(canvas);
 
 Context.scene = new three.Scene();
-Context.scene.add(new three.GridHelper(100, 100));
 
 const input = new Input(canvas);
-const player = new Viewer(input);
+const viewer = new Viewer(input);
 
-Loader.on_load(() => player.reset());
+Loader.on_load(() => viewer.reset());
 
 Context.property = new Property(data[0]);
 
 const clock = new three.Clock();
 
 function render() {
-    player.update(clock.getDelta());
+    viewer.update(clock.getDelta());
 
-    Context.renderer.render(Context.scene, player.camera);
+    Context.renderer.render(Context.scene, viewer.camera);
     requestAnimationFrame(render);
 }
 

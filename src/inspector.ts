@@ -1,5 +1,7 @@
 import * as three from 'three';
 import {Property} from "./property.ts";
+import {generate_selection} from "./selection.ts";
+import {Context} from "./context.ts";
 
 export class Inspector {
     protected _renderer = new three.WebGLRenderer({ antialias: true, canvas: document.createElement('canvas'), alpha: true, premultipliedAlpha: true });
@@ -18,6 +20,11 @@ export class Inspector {
         root.innerHTML = `
             <div class="navbar">
                 <span class="back">&laquo;</span>
+                <span class="property-selection-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-houses" viewBox="0 0 16 16">
+                      <path d="M5.793 1a1 1 0 0 1 1.414 0l.647.646a.5.5 0 1 1-.708.708L6.5 1.707 2 6.207V12.5a.5.5 0 0 0 .5.5.5.5 0 0 1 0 1A1.5 1.5 0 0 1 1 12.5V7.207l-.146.147a.5.5 0 0 1-.708-.708zm3 1a1 1 0 0 1 1.414 0L12 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l1.854 1.853a.5.5 0 0 1-.708.708L15 8.207V13.5a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 4 13.5V8.207l-.146.147a.5.5 0 1 1-.708-.708zm.707.707L5 7.207V13.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5V7.207z"/>
+                    </svg>
+                </span>
                 <h1></h1>
             </div>
             <div class="tab-container">
@@ -58,7 +65,18 @@ export class Inspector {
             </div>
         `;
 
-        root.querySelector('.back')!.addEventListener('click', () => this.show_general());
+        const tab_container = root.querySelector<HTMLDivElement>('.tab-container')!;
+        tab_container.appendChild(generate_selection());
+
+        root.querySelector('.back')!.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.show_general()
+        });
+        root.querySelector('.navbar')!.addEventListener('click', () => tab_container.hidden = !tab_container.hidden);
+        root.querySelector('.property-selection-button')!.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.show_selection();
+        })
 
         const general_container = root.querySelector<HTMLDivElement>('.general')!;
         const property_info = property.info;
@@ -133,19 +151,6 @@ export class Inspector {
         requestAnimationFrame(draw);
     }
 
-    protected dispose_resources(scenes: three.Scene[]) {
-        for (const scene of scenes) {
-            for (const obj of scene.children) {
-                scene.remove(obj);
-
-                if (obj instanceof three.Mesh) {
-                    obj.material.dispose();
-                    obj.geometry.dispose();
-                }
-            }
-        }
-    }
-
     protected update_previews(materials: three.MeshStandardMaterial[], object: three.Mesh, container: HTMLDivElement): { scene: three.Scene, camera: three.Camera, container: HTMLCanvasElement }[] {
         container.innerHTML = '';
 
@@ -172,7 +177,7 @@ export class Inspector {
     protected update_tints(tints: string[], material: three.MeshStandardMaterial, object: three.Mesh) {
         const colors_container = document.querySelector<HTMLDivElement>('.inspector .colors')!;
 
-        this.dispose_resources(this._displayed_tints.map(displayed_tint => displayed_tint.scene));
+        this._displayed_tints.forEach(displayed_tint => Context.dispose(displayed_tint.scene));
 
         this._displayed_tints = [];
 
@@ -197,7 +202,7 @@ export class Inspector {
     protected update_materials(object: three.Mesh) {
         const materials_container = document.querySelector<HTMLDivElement>('.inspector .materials')!;
 
-        this.dispose_resources(this._displayed_materials.map(displayed_material => displayed_material.scene));
+        this._displayed_materials.forEach(displayed_material => Context.dispose(displayed_material.scene));
 
         this._displayed_materials = [];
 
@@ -225,24 +230,54 @@ export class Inspector {
 
     public show_general() {
         document.querySelector<HTMLSpanElement>('.inspector .back')!.hidden = true;
+        document.querySelector<HTMLSpanElement>('.inspector .property-selection-button')!.hidden = false;
         document.querySelector<HTMLHeadingElement>('.inspector h1')!.innerText = this._name;
         document.querySelector<HTMLDivElement>('.inspector .customization')!.hidden = true;
+        document.querySelector<HTMLDivElement>('.inspector .selection')!.hidden = true;
 
         const general_container = document.querySelector<HTMLDivElement>('.inspector .general')!;
+        const tab_container = document.querySelector<HTMLDivElement>('.inspector .tab-container')!;
         general_container.hidden = false;
-        document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = `${general_container.clientHeight}px`;
+        tab_container.hidden = false;
+        tab_container.style.height = `${general_container.clientHeight}px`;
+    }
+
+    public show_selection() {
+        document.querySelector<HTMLSpanElement>('.inspector .back')!.hidden = false;
+        document.querySelector<HTMLSpanElement>('.inspector .property-selection-button')!.hidden = true;
+        document.querySelector<HTMLHeadingElement>('.inspector h1')!.innerText = `Available properties`;
+        document.querySelector<HTMLDivElement>('.inspector .customization')!.hidden = true;
+        document.querySelector<HTMLDivElement>('.inspector .general')!.hidden = true;
+
+        const selection_container = document.querySelector<HTMLDivElement>('.inspector .selection')!;
+        const tab_container = document.querySelector<HTMLDivElement>('.inspector .tab-container')!;
+        selection_container.hidden = false;
+        tab_container.hidden = false;
+        tab_container.style.height = `${selection_container.clientHeight}px`;
     }
 
     public inspect(object: three.Mesh) {
         if (object.userData.materials?.length) {
+            document.querySelector<HTMLDivElement>('.inspector .tab-container')!.hidden = false;
             document.querySelector<HTMLHeadingElement>('.inspector h1')!.innerText = object.name;
             document.querySelector<HTMLDivElement>('.inspector .general')!.hidden = true;
             document.querySelector<HTMLSpanElement>('.inspector .back')!.hidden = false;
+            document.querySelector<HTMLSpanElement>('.inspector .property-selection-button')!.hidden = true;
             document.querySelector<HTMLDivElement>('.inspector .customization')!.hidden = false;
+            document.querySelector<HTMLDivElement>('.inspector .selection')!.hidden = true;
 
             this.update_materials(object);
         } else {
             this.show_general();
         }
+    }
+
+    public dispose() {
+        document.querySelector<HTMLDivElement>('.inspector')!.remove();
+        this._displayed_tints.forEach(displayed_tint => Context.dispose(displayed_tint.scene));
+        this._displayed_materials.forEach(displayed_material => Context.dispose(displayed_material.scene));
+        this._displayed_tints = [];
+        this._displayed_materials = [];
+        this._renderer.dispose();
     }
 }

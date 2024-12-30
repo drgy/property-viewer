@@ -107,16 +107,27 @@ export class Property extends three.Group {
                     directional_light.position.set(light.position.x, light.position.y, light.position.z);
                     directional_light.target.position.set(light.target.x, light.target.y, light.target.z);
                     directional_light.castShadow = true;
-                    directional_light.shadow.camera.bottom = -7;
-                    directional_light.shadow.camera.top = 7;
-                    directional_light.shadow.camera.left = -7;
-                    directional_light.shadow.camera.right = 7;
+                    directional_light.shadow.camera.bottom = -10;
+                    directional_light.shadow.camera.top = 10;
+                    directional_light.shadow.camera.left = -10;
+                    directional_light.shadow.camera.right = 10;
+                    directional_light.shadow.camera.far = 20;
                     directional_light.shadow.mapSize.set(4096, 4096);
-                    directional_light.shadow.bias = -0.0001;
-                    directional_light.shadow.normalBias = -0.0001;
-                    directional_light.shadow.blurSamples = 16;
+                    directional_light.shadow.bias = -0.001;
+                    directional_light.shadow.normalBias = -0.001;
+                    directional_light.shadow.blurSamples = 4;
                     directional_light.shadow.camera.updateProjectionMatrix();
                     Context.scene.add(directional_light);
+                    break;
+                case LightType.Point:
+                    const point_light = new three.PointLight(light.color, light.intensity, light.distance || 0, light.decay || 2);
+                    point_light.position.set(light.position.x, light.position.y, light.position.z);
+                    point_light.castShadow = true;
+                    point_light.shadow.mapSize.set(2048, 2048);
+                    point_light.shadow.bias = -0.0001;
+                    point_light.shadow.normalBias = -0.0001;
+                    point_light.shadow.blurSamples = 16;
+                    point_light.shadow.camera.updateProjectionMatrix();
                     break;
             }
         }
@@ -128,6 +139,16 @@ export class Property extends three.Group {
 
     public inspect(object: three.Mesh) {
         this._inspector.inspect(object);
+    }
+
+    public dispose() {
+        this._inspector.dispose();
+
+        for (const material of this._materials.values()) {
+            material.dispose();
+        }
+
+        Context.dispose(Context.scene!);
     }
 }
 
@@ -144,7 +165,7 @@ export interface PropertyData {
     models: {
         file: string;
     }[];
-    lights: (AmbientLightData | DirectionalLightData)[],
+    lights: (AmbientLightData | DirectionalLightData | PointLightData)[],
     config_options: {
         [name: string]: {
             materials: {
@@ -197,7 +218,21 @@ interface DirectionalLightData {
     };
 }
 
+interface PointLightData {
+    type: LightType.Point;
+    color: string;
+    intensity: number;
+    decay?: number;
+    distance?: number;
+    position: {
+        x: number;
+        y: number;
+        z: number;
+    }
+}
+
 enum LightType {
     Ambient = 'ambient',
-    Directional = 'directional'
+    Directional = 'directional',
+    Point = 'point'
 }

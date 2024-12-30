@@ -40,6 +40,28 @@
           "y": 0,
           "z": 0
         }
+      },
+      {
+        "type": "point",
+        "color": "#ffffff",
+        "intensity": 2,
+        "decay": 1,
+        "position": {
+          "x": -0.1,
+          "y": 2.5,
+          "z": 2.6
+        }
+      },
+      {
+        "type": "point",
+        "color": "#ffffff",
+        "intensity": 2,
+        "decay": 1,
+        "position": {
+          "x": 0.1,
+          "y": 2.4,
+          "z": -5.25
+        }
       }
     ],
     "config_options": {
@@ -59,6 +81,162 @@
           },
           {
             "name": "Marble",
+            "tints": []
+          }
+        ]
+      },
+      "Couch": {
+        "materials": [
+          {
+            "name": "Cream Fabric",
+            "tints": []
+          },
+          {
+            "name": "Blue Fabric",
+            "tints": []
+          },
+          {
+            "name": "Brown Fabric",
+            "tints": []
+          }
+        ]
+      }
+    },
+    "spawn": {
+      "position": {
+        "x": 0.577,
+        "y": 0.2,
+        "z": 0
+      },
+      "rotation": {
+        "x": -0.1,
+        "y": 1.57,
+        "z": 0
+      }
+    }
+  },
+  {
+    "info": {
+      "name": "Remote cabin",
+      "price": 89000,
+      "rooms": 1,
+      "size": 80,
+      "description": "Escape to nature with this charming wooden cabin, nestled in a peaceful, remote setting. Surrounded by lush greenery, it offers a warm and inviting atmosphere, perfect for relaxation or a quiet getaway. Ideal for those seeking tranquility and a connection to the outdoors."
+    },
+    "hdr": {
+      "file": "./forest.hdr",
+      "rotation": {
+        "x": 0,
+        "y": -1.14,
+        "z": 0
+      }
+    },
+    "models": [
+      {
+        "file": "./cabin.gltf"
+      }
+    ],
+    "lights": [
+      {
+        "type": "ambient",
+        "color": "#ffffff",
+        "intensity": 1.5
+      },
+      {
+        "type": "directional",
+        "color": "#ffffff",
+        "intensity": 2,
+        "position": {
+          "x": 8,
+          "y": 2,
+          "z": 6
+        },
+        "target": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      {
+        "type": "point",
+        "color": "#ffffff",
+        "intensity": 2,
+        "decay": 1,
+        "position": {
+          "x": -0.4,
+          "y": 3.7,
+          "z": 0.6
+        }
+      },
+      {
+        "type": "point",
+        "color": "#ffffff",
+        "intensity": 2,
+        "decay": 1,
+        "position": {
+          "x": -0.9,
+          "y": 3.7,
+          "z": 0.6
+        }
+      }
+    ],
+    "config_options": {
+      "Table": {
+        "materials": [
+          {
+            "name": "Wood",
+            "tints": []
+          },
+          {
+            "name": "Worn Wood",
+            "tints": []
+          },
+          {
+            "name": "Dark wood",
+            "tints": []
+          },
+          {
+            "name": "Dirty Wood",
+            "tints": []
+          }
+        ]
+      },
+      "Floor": {
+        "materials": [
+          {
+            "name": "Dark Wood Planks",
+            "tints": []
+          },
+          {
+            "name": "Wood Floor",
+            "tints": []
+          },
+          {
+            "name": "Wood Planks Light",
+            "tints": []
+          }
+        ]
+      },
+      "Fireplace": {
+        "materials": [
+          {
+            "name": "Brick",
+            "tints": []
+          },
+          {
+            "name": "Stone",
+            "tints": []
+          }
+        ]
+      },
+      "Large Window": {
+        "materials": [
+          {
+            "name": "Wood",
+            "tints": []
+          },
+          {
+            "name": "Dark wood",
             "tints": []
           }
         ]

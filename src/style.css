@@ -11,6 +11,7 @@ html, body {
   font-family: 'Argon', system-ui;
   margin: 0;
   height: 100%;
+  touch-action: none;
 }
 
 canvas {
@@ -32,9 +33,14 @@ div.inspector {
   width: 22rem;
 }
 
+.mobile div.inspector {
+  width: 100%;
+}
+
 .inspector .navbar {
   opacity: 0.75;
   background: rgba(20, 20, 20, 0.5);
+  cursor: pointer;
 }
 
 .inspector h1 {
@@ -49,14 +55,26 @@ div.inspector {
   display: inline-block;
   line-height: 2rem;
   vertical-align: middle;
+  user-select: none;
 }
 
-.inspector .back {
+.inspector .navbar .back {
   font-size: 3rem;
   line-height: 2rem;
   font-weight: 300;
   margin: -0.5rem 0 0 0;
   padding: 0 0 0 0.5rem;
+  color: #ffffff;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.inspector .navbar .property-selection-button svg {
+  width: 2rem;
+  height: auto;
+  font-weight: 300;
+  padding: 0 0.5rem 0 0.5rem;
   color: #ffffff;
   display: inline-block;
   vertical-align: middle;
@@ -122,4 +140,34 @@ div.inspector {
   display: inline-block;
   vertical-align: middle;
   padding-right: 0.2rem;
+}
+
+.inspector .selection {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.2rem 1rem;
+}
+
+.inspector .selection > div {
+  display: flex;
+  position: relative;
+}
+
+.inspector .selection .preview {
+  background-color: rgba(20, 20, 20, 0.5);
+  width: 10rem;
+  height: 10rem;
+}
+
+.inspector .selection .name {
+  position: absolute;
+  bottom: 0;
+  background: rgba(20, 20, 20, 0.5);
+  font-size: 1rem;
+  font-weight: 300;
+  color: #ffffff;
+  line-height: 1.5rem;
+  text-align: center;
+  margin: 0;
+  width: 100%;
 }
