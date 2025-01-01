@@ -32,7 +32,16 @@ const viewer = new Viewer(input);
 
 Loader.on_load(() => viewer.reset());
 
-Context.property = new Property(data[0]);
+const index_match = window.location.pathname.match(/(?<=\/properties\/)[0-9]+/);
+let index = 0;
+
+if (!index_match) {
+    window.location.pathname = '/properties/0';
+} else {
+    index = parseInt(index_match[0]);
+}
+
+Context.property = new Property(data[index]);
 
 const clock = new three.Clock();
 

@@ -6,7 +6,7 @@ export function generate_selection(): HTMLDivElement {
     const root = document.createElement("div");
     root.classList.add("selection");
 
-    for (const property of data) {
+    data.forEach((property, index) => {
         const item = document.createElement('div');
 
         item.innerHTML = `
@@ -16,10 +16,11 @@ export function generate_selection(): HTMLDivElement {
 
         item.onclick = () => {
             Context.property!.dispose();
+            window.location.pathname = `/properties/${index}`;
             Context.property = new Property(property);
         };
         root.appendChild(item);
-    }
+    });
 
     return root;
 }

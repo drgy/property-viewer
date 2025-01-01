@@ -153,12 +153,7 @@ export class Property extends three.Group {
             material.dispose();
         }
 
-        console.log(Context.renderer!.info.memory);
-
         Context.dispose(Context.scene!);
-
-        console.log(Context.renderer!.info.memory);
-        console.log(Context.renderer!.info.render);
     }
 }
 
