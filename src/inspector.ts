@@ -259,7 +259,7 @@ export class Inspector {
     public inspect(object: three.Mesh) {
         if (object.userData.materials?.length) {
             document.querySelector<HTMLDivElement>('.inspector .tab-container')!.hidden = false;
-            document.querySelector<HTMLHeadingElement>('.inspector h1')!.innerText = object.name;
+            document.querySelector<HTMLHeadingElement>('.inspector h1')!.innerText = object.name.replace(/_/g, ' ');
             document.querySelector<HTMLDivElement>('.inspector .general')!.hidden = true;
             document.querySelector<HTMLSpanElement>('.inspector .back')!.hidden = false;
             document.querySelector<HTMLSpanElement>('.inspector .property-selection-button')!.hidden = true;

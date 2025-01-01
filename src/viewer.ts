@@ -16,6 +16,7 @@ export class Viewer {
     protected _velocity = new three.Vector3();
     protected _direction = new three.Vector3();
     protected _collider = new Capsule(new three.Vector3(0, 0, 0), new three.Vector3(0, PLAYER_HEIGHT, 0), 0.2);
+    protected _hovered_mesh: three.Mesh | undefined;
 
     public get camera(): three.PerspectiveCamera {
         return this._camera;
@@ -23,7 +24,13 @@ export class Viewer {
     
     constructor(input: Input) {
         this._input = input;
-        this._input.on_move(this.update_rotation.bind(this));
+        this._input.on_move((e) => {
+            this.raycast_pointer(e);
+
+            if (this._input.pressing('mouse0')) {
+                this.update_rotation(e);
+            }
+        });
         this._input.on_click(this.handle_click.bind(this));
 
         const canvas = Context.renderer.domElement;
@@ -34,17 +41,23 @@ export class Viewer {
         resize_observer.observe(canvas);
     }
 
-    protected handle_click(screen_position: three.Vector2) {
+    protected raycast_pointer(e: PointerEvent) {
         if (!Context.property) {
             return;
         }
 
         const raycaster = new three.Raycaster();
-        raycaster.setFromCamera(screen_position, this._camera);
+        raycaster.setFromCamera(this._input.normalize_screen_position(e.clientX, e.clientY), this._camera);
         const intersection = Context.property.intersection(raycaster);
 
         if (intersection.length > 0) {
-            Context.property.inspect(intersection[0].object);
+            this._hovered_mesh = intersection[0].object as three.Mesh;
+        }
+    }
+
+    protected handle_click() {
+        if (Context.property && this._hovered_mesh) {
+            Context.property.inspect(this._hovered_mesh);
         }
     }
 

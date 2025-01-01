@@ -77,17 +77,21 @@ export class Property extends three.Group {
                             this._materials.set(object.material.name, object.material.clone());
                         }
                     }
-                }
 
-                if (object.name in data.config_options) {
                     this._interactive.push(object);
                 }
             });
 
             for (const object of this._interactive) {
-                object.userData = {
-                    materials: data.config_options[object.name].materials.map(material => { return { material: this._materials.get(material.name), tints: material.tints }; }),
-                };
+                for (const rule of Object.keys(data.config_options)) {
+                    if (object.name.match(new RegExp(rule))) {
+                        object.userData = {
+                            materials: data.config_options[rule].materials.map(material => {
+                                return {material: this._materials.get(material.name), tints: material.tints};
+                            }),
+                        };
+                    }
+                }
             }
 
             this._collider.fromGraphNode(this);
@@ -128,6 +132,7 @@ export class Property extends three.Group {
                     point_light.shadow.normalBias = -0.0001;
                     point_light.shadow.blurSamples = 16;
                     point_light.shadow.camera.updateProjectionMatrix();
+                    Context.scene.add(point_light);
                     break;
             }
         }
@@ -148,7 +153,12 @@ export class Property extends three.Group {
             material.dispose();
         }
 
+        console.log(Context.renderer!.info.memory);
+
         Context.dispose(Context.scene!);
+
+        console.log(Context.renderer!.info.memory);
+        console.log(Context.renderer!.info.render);
     }
 }
 

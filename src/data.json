@@ -65,7 +65,7 @@
       }
     ],
     "config_options": {
-      "Wall": {
+      "Wall$": {
         "materials": [
           {
             "name": "Plaster",
@@ -73,7 +73,7 @@
           }
         ]
       },
-      "Floor": {
+      "Floor$": {
         "materials": [
           {
             "name": "Wood floor",
@@ -85,7 +85,7 @@
           }
         ]
       },
-      "Couch": {
+      "Couch$": {
         "materials": [
           {
             "name": "Cream Fabric",
@@ -97,6 +97,74 @@
           },
           {
             "name": "Brown Fabric",
+            "tints": []
+          }
+        ]
+      },
+      "Armchair_[0-9]+$": {
+        "materials": [
+          {
+            "name": "Cream Fabric",
+            "tints": []
+          },
+          {
+            "name": "Blue Fabric",
+            "tints": []
+          },
+          {
+            "name": "Brown Fabric",
+            "tints": []
+          }
+        ]
+      },
+      "Coffee_Table$": {
+        "materials": [
+          {
+            "name": "Ceramic Coating Dark",
+            "tints": []
+          },
+          {
+            "name": "Furniture wood",
+            "tints": []
+          },
+          {
+            "name": "Wood",
+            "tints": []
+          },
+          {
+            "name": "Furniture Wood Light",
+            "tints": []
+          }
+        ]
+      },
+      "TV_Cabinet$": {
+        "materials": [
+          {
+            "name": "Furniture wood",
+            "tints": []
+          },
+          {
+            "name": "Wood",
+            "tints": []
+          },
+          {
+            "name": "Furniture Wood Light",
+            "tints": []
+          }
+        ]
+      },
+      "Dining_Table$": {
+        "materials": [
+          {
+            "name": "Furniture wood",
+            "tints": []
+          },
+          {
+            "name": "Wood",
+            "tints": []
+          },
+          {
+            "name": "Furniture Wood Light",
             "tints": []
           }
         ]
