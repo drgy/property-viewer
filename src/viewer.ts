@@ -126,6 +126,8 @@ export class Viewer {
         const collision = Context.property?.collider.capsuleIntersect(this._collider);
 
         if (collision && collision.depth >= 0.0001) {
+            collision.normal.y = 0;
+            collision.normal.normalize();
             this._collider.translate(collision.normal.multiplyScalar(collision.depth));
         }
 
