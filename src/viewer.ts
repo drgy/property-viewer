@@ -42,6 +42,8 @@ export class Viewer {
     }
 
     protected raycast_pointer(e: PointerEvent) {
+        this._hovered_mesh = undefined;
+
         if (!Context.property) {
             return;
         }
@@ -51,8 +53,14 @@ export class Viewer {
         const intersection = Context.property.intersection(raycaster);
 
         if (intersection.length > 0) {
-            this._hovered_mesh = intersection[0].object as three.Mesh;
+            if (intersection[0].object.userData.materials?.length) {
+                this._hovered_mesh = intersection[0].object as three.Mesh;
+                document.body.style.cursor = 'pointer';
+                return;
+            }
         }
+
+        document.body.style.cursor = 'default';
     }
 
     protected handle_click() {
