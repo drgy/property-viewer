@@ -36,7 +36,7 @@ const index_match = window.location.pathname.match(/(?<=\/properties\/)[0-9]+/);
 let index = 0;
 
 if (!index_match) {
-    window.location.pathname = '/properties/0';
+    window.location.pathname += '/properties/0';
 } else {
     index = parseInt(index_match[0]);
 }
