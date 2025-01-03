@@ -10,6 +10,8 @@ export class Input {
     protected _move_callbacks: ((event: PointerEvent) => void)[] = [];
     protected _pointer_lock_time: number | null = null;
 
+    public joystick_input = new three.Vector2();
+
     constructor(element: Element) {
         this._element = element;
         this._element.addEventListener('keydown', e => this._input.set(e.key, true));
@@ -39,6 +41,94 @@ export class Input {
         this._element.addEventListener('pointermove', e => {
             this._move_callbacks.forEach(callback => callback(e));
         });
+
+        this.init_joystick();
+    }
+
+    protected init_joystick() {
+        const joystick = document.querySelector<HTMLDivElement>('.joystick')!;
+        const handle = document.querySelector<HTMLDivElement>('.handle')!;
+
+        if (!('ontouchstart' in window) && !navigator.maxTouchPoints && !navigator.msMaxTouchPoints) {
+            joystick.hidden = true;
+            return;
+        }
+
+        const handle_border_width = parseFloat(window.getComputedStyle(handle).borderWidth);
+        const joystick_radius = (joystick.offsetWidth - parseFloat(window.getComputedStyle(joystick).borderWidth)) / 2;
+        const handle_radius = (handle.offsetWidth - handle_border_width) / 2;
+        const joystick_rect = joystick.getBoundingClientRect();
+
+        const center = new three.Vector2(joystick_rect.left + joystick_radius, joystick_rect.top + joystick_radius);
+        const position = new three.Vector2().copy(center);
+        const delta = new three.Vector2();
+        let joystick_active = false;
+
+        const set_handle_position = (position: three.Vector2) => {
+            handle.style.transform = `translate(${position.x - joystick_rect.left - handle_radius - handle_border_width}px, ${position.y - joystick_rect.top - handle_radius - handle_border_width}px)`;
+        }
+
+        const move_handle = (x: number, y: number)=> {
+            delta.set(x - center.x, y - center.y);
+
+            const length = Math.min(delta.length(), joystick_radius - handle_radius);
+            const angle = delta.angle();
+
+            position.set(center.x + Math.cos(angle) * length, center.y + Math.sin(angle) * length);
+
+            this.joystick_input.copy(position).sub(center).divideScalar(joystick_radius);
+
+            set_handle_position(position);
+        }
+
+        const animate_handle_to_center = () => {
+            const duration = 200;
+            let start = 0;
+
+            const animate = (time: number) => {
+                if (start === 0) {
+                    start = time;
+                }
+
+                if (!joystick_active) {
+                    position.lerp(center, (time - start) / duration);
+
+                    this.joystick_input.copy(position).sub(center).divideScalar(joystick_radius);
+
+                    set_handle_position(position);
+
+                    if (position.distanceTo(center) > 0.5) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        position.copy(center);
+
+                        this.joystick_input.copy(position).sub(center).normalize();
+
+                        set_handle_position(position);
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        set_handle_position(position);
+
+        joystick.addEventListener('touchstart', event => {
+            joystick_active = true;
+            move_handle(event.touches[0].clientX, event.touches[0].clientY);
+        }, { passive: true });
+
+        joystick.addEventListener('touchmove', event => {
+            if (joystick_active) {
+                move_handle(event.touches[0].clientX, event.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        joystick.addEventListener('touchend', () => {
+            joystick_active = false;
+            animate_handle_to_center();
+        }, { passive: true });
     }
 
     public normalize_screen_position(x: number, y: number): three.Vector2 {

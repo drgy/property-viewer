@@ -115,6 +115,10 @@ export class Viewer {
         }
 
         this._velocity.normalize();
+
+        this._velocity.add(this.forward(this._direction).multiplyScalar(-this._input.joystick_input.y));
+        this._velocity.add(this.right(this._direction).multiplyScalar(this._input.joystick_input.x));
+
         this._velocity.multiplyScalar(MOVEMENT_SPEED * delta);
 
         if (this._velocity.length() === 0) {
