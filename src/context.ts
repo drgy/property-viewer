@@ -42,7 +42,7 @@ export class Context {
 
     public static dispose(scene: three.Scene) {
         scene.traverse(object => {
-            const dispose_textures = (material: three.Material) => {
+            const dispose_textures = (material: three.MeshStandardMaterial) => {
                 material.map?.dispose();
                 material.metalnessMap?.dispose();
                 material.normalMap?.dispose();

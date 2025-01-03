@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Argon';
-  src: url('../fonts/argon.woff2');
+  src: url('/argon.woff2');
 }
 
 [hidden] {

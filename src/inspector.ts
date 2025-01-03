@@ -2,6 +2,7 @@ import * as three from 'three';
 import {Property} from "./property.ts";
 import {generate_selection} from "./selection.ts";
 import {Context} from "./context.ts";
+import {MeshStandardMaterial} from "three";
 
 export class Inspector {
     protected _renderer = new three.WebGLRenderer({ antialias: true, canvas: document.createElement('canvas'), alpha: true, premultipliedAlpha: true });
@@ -215,8 +216,8 @@ export class Inspector {
 
         document.querySelector<HTMLDivElement>('.inspector .materials-container')!.hidden = false;
 
-        this._displayed_materials = this.update_previews(object.userData.materials.map(option => {
-            if (option.material.name === object.material.name) {
+        this._displayed_materials = this.update_previews(object.userData.materials.map((option: { material: MeshStandardMaterial; tints: string[] }) => {
+            if (option.material.name === (object.material as MeshStandardMaterial).name) {
                 this.update_tints(option.tints, option.material, object);
             }
 

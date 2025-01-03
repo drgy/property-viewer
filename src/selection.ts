@@ -17,6 +17,7 @@ export function generate_selection(): HTMLDivElement {
         item.onclick = () => {
             Context.property!.dispose();
             window.location.pathname = `/properties/${index}`;
+            // @ts-ignore
             Context.property = new Property(property);
         };
         root.appendChild(item);

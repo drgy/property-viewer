@@ -41,6 +41,7 @@ if (!index_match) {
     index = parseInt(index_match[0]);
 }
 
+// @ts-ignore
 Context.property = new Property(data[index]);
 
 const clock = new three.Clock();

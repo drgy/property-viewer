@@ -14,32 +14,32 @@ export class Input {
 
     constructor(element: Element) {
         this._element = element;
-        this._element.addEventListener('keydown', e => this._input.set(e.key, true));
-        this._element.addEventListener('keyup', e => this._input.set(e.key, false));
+        this._element.addEventListener('keydown', e => this._input.set((e as KeyboardEvent).key, true));
+        this._element.addEventListener('keyup', e => this._input.set((e as KeyboardEvent).key, false));
 
-        this._element.addEventListener('pointerdown', (e) => {
-            this._input.set(`mouse${e.button}`, true);
+        this._element.addEventListener('pointerdown', e => {
+            this._input.set(`mouse${(e as PointerEvent).button}`, true);
 
-            if (e.button === 0) {
+            if ((e as PointerEvent).button === 0) {
                 this._pointer_lock_time = Date.now();
             }
         });
 
         this._element.addEventListener('pointerup', e => {
-            if (e.button === 0) {
+            if ((e as PointerEvent).button === 0) {
                 if (Date.now() <= (this._pointer_lock_time || Date.now()) + DRAG_THRESHOLD) {
-                    const screen_position = this.normalize_screen_position(e.clientX, e.clientY);
+                    const screen_position = this.normalize_screen_position((e as PointerEvent).clientX, (e as PointerEvent).clientY);
                     this._click_callbacks.forEach(callback => callback(screen_position));
                 }
 
                 this._pointer_lock_time = null;
             }
 
-            this._input.set(`mouse${e.button}`, false);
+            this._input.set(`mouse${(e as PointerEvent).button}`, false);
         });
 
         this._element.addEventListener('pointermove', e => {
-            this._move_callbacks.forEach(callback => callback(e));
+            this._move_callbacks.forEach(callback => callback(e as PointerEvent));
         });
 
         this.init_joystick();
@@ -49,7 +49,7 @@ export class Input {
         const joystick = document.querySelector<HTMLDivElement>('.joystick')!;
         const handle = document.querySelector<HTMLDivElement>('.handle')!;
 
-        if (!('ontouchstart' in window) && !navigator.maxTouchPoints && !navigator.msMaxTouchPoints) {
+        if (!('ontouchstart' in window) && !navigator.maxTouchPoints) {
             joystick.hidden = true;
             return;
         }
