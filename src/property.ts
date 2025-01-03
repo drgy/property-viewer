@@ -49,13 +49,6 @@ export class Property extends three.Group {
 
             for (const model of load_data.models) {
                 this.add(model);
-
-                const axes = new three.AxesHelper();
-                axes.position.copy(model.position);
-                axes.rotation.copy(model.rotation);
-                axes.material.depthTest = false;
-                axes.renderOrder = 1;
-                Context.scene.add(axes);
             }
 
             this.traverse(object => {
@@ -199,6 +192,7 @@ export interface PropertyInfo {
     rooms: number;
     size: number;
     description: string;
+    preview: string;
 }
 
 interface AmbientLightData {

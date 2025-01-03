@@ -170,7 +170,8 @@ div.inspector {
 .inspector .selection {
   display: flex;
   flex-wrap: wrap;
-  padding: 0.2rem 1rem;
+  padding: 1rem 1rem;
+  gap: 1rem;
 }
 
 .inspector .selection > div {
@@ -180,14 +181,15 @@ div.inspector {
 
 .inspector .selection .preview {
   background-color: rgba(20, 20, 20, 0.5);
-  width: 10rem;
-  height: 10rem;
+  width: 9.5rem;
+  height: 9.5rem;
 }
 
 .inspector .selection .name {
   position: absolute;
   bottom: 0;
   background: rgba(20, 20, 20, 0.5);
+  backdrop-filter: blur(0.1rem) contrast(50%);
   font-size: 1rem;
   font-weight: 300;
   color: #ffffff;

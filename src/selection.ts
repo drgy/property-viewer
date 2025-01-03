@@ -10,7 +10,7 @@ export function generate_selection(): HTMLDivElement {
         const item = document.createElement('div');
 
         item.innerHTML = `
-            <div class="preview"></div>
+            <img src="${property.info.preview}" class="preview" />
             <span class="name">${property.info.name}</span>
         `;
 
