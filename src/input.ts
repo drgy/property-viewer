@@ -36,6 +36,16 @@ export class Input {
             }
 
             this._input.set(`mouse${(e as PointerEvent).button}`, false);
+            e.stopPropagation();
+        });
+
+        document.addEventListener('pointerup', e => {
+            this._pointer_lock_time = null;
+            this._input.set(`mouse${(e as PointerEvent).button}`, false);
+        });
+        document.addEventListener('pointerout', e => {
+            this._pointer_lock_time = null;
+            this._input.set(`mouse${(e as PointerEvent).button}`, false);
         });
 
         this._element.addEventListener('pointermove', e => {
