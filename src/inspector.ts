@@ -197,7 +197,7 @@ export class Inspector {
 
         this.render();
 
-        document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = `${document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!.clientHeight}px`;
+        document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = `${document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!.computedStyleMap().get('height')}px`;
     }
 
     protected update_materials(object: three.Mesh) {
@@ -226,7 +226,7 @@ export class Inspector {
 
         this.render();
 
-        document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = `${document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!.clientHeight}px`;
+        document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = `${document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!.computedStyleMap().get('height')}px`;
     }
 
     public show_general() {
@@ -240,7 +240,7 @@ export class Inspector {
         const tab_container = document.querySelector<HTMLDivElement>('.inspector .tab-container')!;
         general_container.hidden = false;
         tab_container.hidden = false;
-        tab_container.style.height = `${general_container.clientHeight}px`;
+        tab_container.style.height = `${general_container.computedStyleMap().get('height')}px`;
     }
 
     public show_selection() {
@@ -254,7 +254,7 @@ export class Inspector {
         const tab_container = document.querySelector<HTMLDivElement>('.inspector .tab-container')!;
         selection_container.hidden = false;
         tab_container.hidden = false;
-        tab_container.style.height = `${selection_container.clientHeight}px`;
+        tab_container.style.height = `${selection_container.computedStyleMap().get('height')}px`;
     }
 
     public inspect(object: three.Mesh) {
