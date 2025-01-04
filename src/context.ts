@@ -1,11 +1,13 @@
 import * as three from 'three';
 import {Property} from "./property.ts";
+import {Viewer} from "./viewer.ts";
 
 export class Context {
     static #instance: Context | undefined = undefined;
     protected _renderer: three.WebGLRenderer | undefined;
     protected _scene: three.Scene | undefined;
     protected _property: Property | undefined;
+    protected _viewer: Viewer | undefined;
     protected _mobile = false;
 
     public static get renderer(): three.WebGLRenderer {
@@ -30,6 +32,14 @@ export class Context {
 
     public static set property(property: Property | undefined) {
         Context.instance._property = property;
+    }
+
+    public static get viewer(): Viewer | undefined {
+        return Context.instance._viewer;
+    }
+
+    public static set viewer(viewer: Viewer | undefined) {
+        Context.instance._viewer = viewer;
     }
 
     public static get mobile(): boolean {

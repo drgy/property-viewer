@@ -87,6 +87,7 @@ export class Property extends three.Group {
                 }
             }
 
+            Context.viewer!.reset();
             this._collider.fromGraphNode(this);
             Context.scene.add(this);
         });

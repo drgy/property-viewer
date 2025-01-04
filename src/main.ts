@@ -4,7 +4,6 @@ import {Viewer} from "./viewer.ts";
 import {Input} from "./input.ts";
 import {Property} from "./property.ts";
 import {Context} from "./context.ts";
-import {Loader} from "./loader.ts";
 
 const canvas = document.querySelector('canvas')!;
 Context.renderer = new three.WebGLRenderer({ antialias: true, canvas });
@@ -29,8 +28,7 @@ Context.scene = new three.Scene();
 
 const input = new Input(canvas);
 const viewer = new Viewer(input);
-
-Loader.on_load(() => viewer.reset());
+Context.viewer = viewer;
 
 const search_params = new URLSearchParams(window.location.search);
 
