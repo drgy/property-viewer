@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Argon';
-  src: url('/argon.woff2');
+  src: url('/xenon.woff2');
 }
 
 [hidden] {
@@ -55,7 +55,7 @@ div.inspector {
   right: 0;
   background: rgba(20, 20, 20, 0.5);
   backdrop-filter: blur(0.5rem) contrast(30%);
-  width: 22rem;
+  width: 28rem;
 }
 
 .mobile div.inspector {
@@ -81,6 +81,8 @@ div.inspector {
   line-height: 2rem;
   vertical-align: middle;
   user-select: none;
+  max-width: 22rem;
+  letter-spacing: -0.14rem;
 }
 
 .inspector .navbar .back {
@@ -158,6 +160,11 @@ div.inspector {
   font-weight: 500;
   display: inline-block;
   vertical-align: middle;
+  margin-left: -0.3rem;
+}
+
+.inspector .general-data svg {
+  padding: 0;
 }
 
 .inspector svg {
@@ -181,8 +188,8 @@ div.inspector {
 
 .inspector .selection .preview {
   background-color: rgba(20, 20, 20, 0.5);
-  width: 9.5rem;
-  height: 9.5rem;
+  width: 12.5rem;
+  height: 12.5rem;
 }
 
 .inspector .selection .name {
