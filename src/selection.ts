@@ -6,7 +6,7 @@ export function generate_selection(): HTMLDivElement {
     const root = document.createElement("div");
     root.classList.add("selection");
 
-    data.forEach((property, index) => {
+    data.forEach(property => {
         const item = document.createElement('div');
 
         item.innerHTML = `
