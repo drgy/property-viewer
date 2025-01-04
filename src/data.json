@@ -6,10 +6,10 @@
       "rooms": 4,
       "size": 150,
       "description": "This spacious 4-room apartment offers stunning sea views and an unbeatable beachfront location. With a modern design and plenty of natural light, it’s the perfect space for seaside living or a serene getaway.",
-      "preview": "../../room.webp"
+      "preview": "./room.webp"
     },
     "hdr": {
-      "file": "../../beach.hdr",
+      "file": "./beach.hdr",
       "rotation": {
         "x": 0,
         "y": -1.14,
@@ -18,7 +18,7 @@
     },
     "models": [
       {
-        "file": "../../room.gltf"
+        "file": "./room.gltf"
       }
     ],
     "lights": [
@@ -199,10 +199,10 @@
       "rooms": 1,
       "size": 54,
       "description": "Escape to nature with this charming wooden cabin, nestled in a peaceful, remote setting. Surrounded by lush greenery, it offers a warm and inviting atmosphere, perfect for relaxation or a quiet getaway. Ideal for those seeking tranquility and a connection to the outdoors.",
-      "preview": "../../cabin.webp"
+      "preview": "./cabin.webp"
     },
     "hdr": {
-      "file": "../../forest.hdr",
+      "file": "./forest.hdr",
       "rotation": {
         "x": 0,
         "y": -1.14,
@@ -211,7 +211,7 @@
     },
     "models": [
       {
-        "file": "../../cabin.gltf"
+        "file": "./cabin.gltf"
       }
     ],
     "lights": [

@@ -32,17 +32,15 @@ const viewer = new Viewer(input);
 
 Loader.on_load(() => viewer.reset());
 
-const index_match = window.location.pathname.match(/(?<=\/properties\/)[0-9]+/);
-let index = 0;
+const search_params = new URLSearchParams(window.location.search);
 
-if (!index_match) {
-    window.location.pathname += '/properties/0';
+if (search_params.has('listing')) {
+    // @ts-ignore
+    Context.property = new Property(data[search_params.get('listing')!]);
 } else {
-    index = parseInt(index_match[0]);
+    // @ts-ignore
+    Context.property = new Property(data[0]);
 }
-
-// @ts-ignore
-Context.property = new Property(data[index]);
 
 const clock = new three.Clock();
 
