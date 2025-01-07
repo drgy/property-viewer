@@ -1,7 +1,7 @@
 import * as three from 'three';
-import { Loader } from "./loader.ts";
-import { Octree } from 'three/addons/math/Octree.js';
-import {Context} from "./context.ts";
+import {Loader} from "./loader.ts";
+import {Octree} from 'three/addons/math/Octree.js';
+import {Context, Performance} from "./context.ts";
 import {Inspector} from "./inspector.ts";
 import loading_plan from './plan.svg?raw';
 
@@ -85,7 +85,16 @@ export class Property extends three.Group {
         setTimeout(() => {
             this.loading_animation(load_canvas.getContext('2d')!, load_background.getContext('2d')!, load_screen, ANIM_DURATION);
 
-            Loader.load_hdr(data.hdr.file);
+            const high_performance = Context.performance === Performance.HIGH;
+
+            const perf_text = document.createElement('div');
+            perf_text.style.position = 'absolute';
+            perf_text.style.bottom = '1rem';
+            perf_text.style.right = '1rem';
+            perf_text.innerText = `${high_performance ? 'high' : 'low'} performance`;
+            document.body.appendChild(perf_text);
+
+            Loader.load_hdr(high_performance ? data.hdr.file : data.hdr.file.replace(/\.hdr$/, '_low.hdr'));
             Loader.load_gltf(data.models.map(model => model.file));
             Loader.on_load(load_data => {
                 this._hdr = load_data.hdr;
@@ -157,7 +166,7 @@ export class Property extends three.Group {
                         directional_light.shadow.camera.left = -10;
                         directional_light.shadow.camera.right = 10;
                         directional_light.shadow.camera.far = 20;
-                        directional_light.shadow.mapSize.set(4096, 4096);
+                        directional_light.shadow.mapSize.set(high_performance ? 4096 : 2048, high_performance ? 4096 : 2048);
                         directional_light.shadow.bias = -0.001;
                         directional_light.shadow.normalBias = -0.001;
                         directional_light.shadow.blurSamples = 4;
@@ -168,7 +177,7 @@ export class Property extends three.Group {
                         const point_light = new three.PointLight(light.color, light.intensity, light.distance || 0, light.decay || 2);
                         point_light.position.set(light.position.x, light.position.y, light.position.z);
                         point_light.castShadow = true;
-                        point_light.shadow.mapSize.set(2048, 2048);
+                        point_light.shadow.mapSize.set(high_performance ? 2048 : 1024, high_performance ? 2048 : 1024);
                         point_light.shadow.bias = -0.0001;
                         point_light.shadow.normalBias = -0.0001;
                         point_light.shadow.blurSamples = 16;

@@ -10,6 +10,17 @@ export class Context {
     protected _viewer: Viewer | undefined;
     protected _mobile = false;
 
+    public static get performance(): Performance {
+        const start = Date.now();
+        const ctx = Context.instance._renderer!.getContext()!;
+
+        for (let i = 0; i < 100000; i++) {
+            ctx.clear(ctx?.COLOR_BUFFER_BIT);
+        }
+
+        return Date.now() - start > 100 ? Performance.LOW : Performance.HIGH;
+    }
+
     public static get renderer(): three.WebGLRenderer {
         return Context.instance._renderer!;
     }
@@ -92,4 +103,9 @@ export class Context {
     protected constructor() {}
 
 
+}
+
+export enum Performance {
+    HIGH = 'high',
+    LOW = 'low'
 }
