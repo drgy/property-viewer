@@ -246,7 +246,7 @@ export class Inspector {
     public show_selection() {
         document.querySelector<HTMLSpanElement>('.inspector .back')!.hidden = false;
         document.querySelector<HTMLSpanElement>('.inspector .property-selection-button')!.hidden = true;
-        document.querySelector<HTMLHeadingElement>('.inspector h1')!.innerText = `Available properties`;
+        document.querySelector<HTMLHeadingElement>('.inspector h1')!.innerText = `Listings`;
         document.querySelector<HTMLDivElement>('.inspector .customization')!.hidden = true;
         document.querySelector<HTMLDivElement>('.inspector .general')!.hidden = true;
 

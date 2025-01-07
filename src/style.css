@@ -66,22 +66,24 @@ div.inspector {
   opacity: 0.75;
   background: rgba(20, 20, 20, 0.5);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
 }
 
 .inspector h1 {
   font-size: 2rem;
   font-weight: 300;
   margin: 0;
-  padding: 0.5rem;
+  padding: 0 0.5rem;
   color: #ffffff;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  display: inline-block;
+  flex: 1;
   line-height: 2rem;
-  vertical-align: middle;
   user-select: none;
-  max-width: 22rem;
+  max-width: 100%;
   letter-spacing: -0.14rem;
 }
 
@@ -90,11 +92,10 @@ div.inspector {
   line-height: 2rem;
   font-weight: 300;
   margin: -0.5rem 0 0 0;
-  padding: 0 0 0 0.5rem;
+  padding: 0 0.5rem 0 0;
   color: #ffffff;
-  display: inline-block;
-  vertical-align: middle;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .inspector .navbar .property-selection-button svg {
@@ -175,21 +176,24 @@ div.inspector {
 }
 
 .inspector .selection {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 1rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
+  padding: 1rem;
 }
 
 .inspector .selection > div {
   display: flex;
+  flex-direction: column;
   position: relative;
+  aspect-ratio: 1;
+  width: 100%;
 }
 
 .inspector .selection .preview {
   background-color: rgba(20, 20, 20, 0.5);
-  width: 12.5rem;
-  height: 12.5rem;
+  flex-grow: 1;
+  width: 100%;
 }
 
 .inspector .selection .name {
