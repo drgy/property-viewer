@@ -14,7 +14,7 @@ export class Context {
         const start = Date.now();
         const ctx = Context.instance._renderer!.getContext()!;
 
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 20; i++) {
             const scene = new three.Scene();
             const camera = new three.PerspectiveCamera();
             camera.lookAt(new three.Vector3(0, 0, 0));
@@ -37,7 +37,7 @@ export class Context {
         perf_text.innerText = `Performance test: ${Date.now() - start}`;
         document.body.appendChild(perf_text);
 
-        return Date.now() - start > 350 ? Performance.LOW : Performance.HIGH;
+        return Date.now() - start > 500 ? Performance.LOW : Performance.HIGH;
     }
 
     public static get renderer(): three.WebGLRenderer {
