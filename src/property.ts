@@ -87,13 +87,6 @@ export class Property extends three.Group {
 
             const high_performance = Context.performance === Performance.HIGH;
 
-            const perf_text = document.createElement('div');
-            perf_text.style.position = 'absolute';
-            perf_text.style.bottom = '1rem';
-            perf_text.style.right = '1rem';
-            perf_text.innerText = `${high_performance ? 'high' : 'low'} performance`;
-            document.body.appendChild(perf_text);
-
             Loader.load_hdr(high_performance ? data.hdr.file : data.hdr.file.replace(/\.hdr$/, '_low.hdr'));
             Loader.load_gltf(data.models.map(model => model.file));
             Loader.on_load(load_data => {

@@ -30,6 +30,13 @@ export class Context {
             texture.dispose();
         }
 
+        const perf_text = document.createElement('div');
+        perf_text.style.position = 'absolute';
+        perf_text.style.bottom = '1rem';
+        perf_text.style.right = '1rem';
+        perf_text.innerText = `Performance test: ${Date.now() - start}`;
+        document.body.appendChild(perf_text);
+
         return Date.now() - start > 350 ? Performance.LOW : Performance.HIGH;
     }
 
