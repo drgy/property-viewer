@@ -64,15 +64,29 @@ export class Input {
             return;
         }
 
-        const handle_border_width = parseFloat(window.getComputedStyle(handle).borderWidth);
-        const joystick_radius = (joystick.offsetWidth - parseFloat(window.getComputedStyle(joystick).borderWidth)) / 2;
-        const handle_radius = (handle.offsetWidth - handle_border_width) / 2;
-        const joystick_rect = joystick.getBoundingClientRect();
+        let  handle_border_width: number;
+        let joystick_radius: number;
+        let handle_radius: number;
+        let joystick_rect: DOMRect;
 
-        const center = new three.Vector2(joystick_rect.left + joystick_radius, joystick_rect.top + joystick_radius);
-        const position = new three.Vector2().copy(center);
+        const center = new three.Vector2();
+        const position = new three.Vector2();
         const delta = new three.Vector2();
         let joystick_active = false;
+
+        const calculate_positions = () => {
+            handle_border_width = parseFloat(window.getComputedStyle(handle).borderWidth);
+            joystick_radius = (joystick.offsetWidth - parseFloat(window.getComputedStyle(joystick).borderWidth)) / 2;
+            handle_radius = (handle.offsetWidth - handle_border_width) / 2;
+            joystick_rect = joystick.getBoundingClientRect();
+            center.set(joystick_rect.left + joystick_radius, joystick_rect.top + joystick_radius);
+            position.copy(center);
+        }
+
+        const observer = new ResizeObserver(calculate_positions.bind(this));
+        observer.observe(document.documentElement);
+
+        calculate_positions();
 
         const set_handle_position = (position: three.Vector2) => {
             handle.style.transform = `translate(${position.x - joystick_rect.left - handle_radius - handle_border_width}px, ${position.y - joystick_rect.top - handle_radius - handle_border_width}px)`;
