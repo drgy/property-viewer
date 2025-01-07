@@ -235,6 +235,10 @@ export class Property extends three.Group {
             }
 
             if (started_loading && Loader.progress === 0) {
+                if (container.style.marginTop === '-100vh') {
+                    return;
+                }
+
                 loaded = true;
             }
 
