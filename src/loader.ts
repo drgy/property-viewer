@@ -27,7 +27,7 @@ export class Loader {
     protected constructor() {
         this._hdr.setDataType(three.FloatType);
 
-        this._manager.onProgress = (current_url, loaded, total) => {
+        this._manager.onProgress = (_, loaded, total) => {
             this._progress = loaded / total;
         };
 
