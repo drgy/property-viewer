@@ -16,7 +16,6 @@ export class Viewer {
     protected _velocity = new three.Vector3();
     protected _direction = new three.Vector3();
     protected _collider = new Capsule(new three.Vector3(0, 0, 0), new three.Vector3(0, PLAYER_HEIGHT, 0), 0.2);
-    protected _hovered_mesh: three.Mesh | undefined;
 
     public get camera(): three.PerspectiveCamera {
         return this._camera;
@@ -25,7 +24,9 @@ export class Viewer {
     constructor(input: Input) {
         this._input = input;
         this._input.on_move((e) => {
-            this.raycast_pointer(e);
+            if (e.pointerType === 'mouse') {
+                this.raycast_pointer(this._input.normalize_screen_position(e.clientX, e.clientY));
+            }
 
             if (this._input.pressing('mouse0')) {
                 this.update_rotation(e);
@@ -41,31 +42,32 @@ export class Viewer {
         resize_observer.observe(canvas);
     }
 
-    protected raycast_pointer(e: PointerEvent) {
-        this._hovered_mesh = undefined;
-
+    protected raycast_pointer(screen_position: three.Vector2): three.Mesh | null {
         if (!Context.property) {
-            return;
+            return null;
         }
 
         const raycaster = new three.Raycaster();
-        raycaster.setFromCamera(this._input.normalize_screen_position(e.clientX, e.clientY), this._camera);
+        raycaster.setFromCamera(screen_position, this._camera);
         const intersection = Context.property.intersection(raycaster);
 
         if (intersection.length > 0) {
             if (intersection[0].object.userData.materials?.length) {
-                this._hovered_mesh = intersection[0].object as three.Mesh;
                 document.body.style.cursor = 'pointer';
-                return;
+                return intersection[0].object as three.Mesh;
             }
         }
 
         document.body.style.cursor = 'default';
+
+        return null;
     }
 
-    protected handle_click() {
-        if (Context.property && this._hovered_mesh) {
-            Context.property.inspect(this._hovered_mesh);
+    protected handle_click(screen_position: three.Vector2) {
+        const mesh = this.raycast_pointer(screen_position);
+
+        if (mesh) {
+            Context.property!.inspect(mesh);
         }
     }
 
