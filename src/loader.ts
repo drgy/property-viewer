@@ -10,6 +10,11 @@ export class Loader {
     protected _hdr = new RGBELoader(this._manager);
     protected _callbacks: ((data: LoaderData) => void)[] = [];
     protected _data: LoaderData = { hdr: new three.DataTexture(), models: [] };
+    protected _progress = 0;
+
+    public static get progress(): number {
+        return Loader.instance._progress;
+    }
 
     protected static get instance(): Loader {
         if (Loader.#instance === undefined) {
@@ -23,7 +28,7 @@ export class Loader {
         this._hdr.setDataType(three.FloatType);
 
         this._manager.onProgress = (current_url, loaded, total) => {
-            console.log(`loading ${loaded/total}: ${current_url}`);
+            this._progress = loaded / total;
         };
 
         this._manager.onLoad = () => {
