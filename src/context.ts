@@ -14,11 +14,23 @@ export class Context {
         const start = Date.now();
         const ctx = Context.instance._renderer!.getContext()!;
 
-        for (let i = 0; i < 100000; i++) {
-            ctx.clear(ctx?.COLOR_BUFFER_BIT);
+        for (let i = 0; i < 25; i++) {
+            const scene = new three.Scene();
+            const camera = new three.PerspectiveCamera();
+            camera.lookAt(new three.Vector3(0, 0, 0));
+            const texture = new three.Texture(ctx.canvas);
+            const material = new three.MeshStandardMaterial({ map: texture });
+            const geometry = new three.BoxGeometry();
+            const mesh = new three.Mesh(geometry, material);
+            scene.add(camera, mesh);
+            Context.instance._renderer!.render(scene, camera);
+            scene.remove(camera, mesh);
+            geometry.dispose();
+            material.dispose();
+            texture.dispose();
         }
 
-        return Date.now() - start > 100 ? Performance.LOW : Performance.HIGH;
+        return Date.now() - start > 350 ? Performance.LOW : Performance.HIGH;
     }
 
     public static get renderer(): three.WebGLRenderer {
