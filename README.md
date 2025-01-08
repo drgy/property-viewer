@@ -17,6 +17,10 @@ This project is a demo application showcasing the interiors of properties for sa
 ### Collision Detection
 - Utilizes Three.js Octree for efficient collision detection and smooth navigation.
 
+### Responsive Design
+- Optimized for various screen sizes, ensuring a seamless experience across devices.
+- Includes support for touch interactions on mobile and tablet devices.
+
 ---
 
 ## Installation
