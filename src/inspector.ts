@@ -52,6 +52,7 @@ export class Inspector {
                             <p class="size"></p>
                         </div>
                     </div>
+                    <button>Contact</button>
                 </div>
                 <div class="customization">
                     <div class="materials-container">
@@ -90,6 +91,9 @@ export class Inspector {
 
         document.body.appendChild(root);
         this.show_general();
+
+        document.querySelector('.modal .backdrop')!.addEventListener('click', () => document.querySelector<HTMLDivElement>('.modal')!.hidden = true);
+        document.querySelector('.inspector .general button')!.addEventListener('click', () => this.show_portfolio_modal());
     }
 
     protected generate_preview(material: three.MeshStandardMaterial): { scene: three.Scene, camera: three.Camera } {
@@ -227,6 +231,18 @@ export class Inspector {
         this.render();
 
         document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = `${document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!.computedStyleMap().get('height')}px`;
+    }
+
+    public show_portfolio_modal() {
+        const modal = document.querySelector<HTMLDivElement>('.modal')!;
+        const content = modal.querySelector<HTMLDivElement>('.content')!;
+
+        content.innerHTML = `
+           <div>This property is part of a portfolio project and is not available for sale. However, I specialize in delivering various software solutions. Feel free to explore my portfolio and reach out if you'd like to collaborate.</div>
+            <a href="/" target="_blank">Visit Portfolio</a>
+        `;
+
+        modal.hidden = false;
     }
 
     public show_general() {

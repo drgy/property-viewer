@@ -73,7 +73,7 @@ export class Property extends three.Group {
         loading_text.style.bottom = '1rem';
         loading_text.style.padding = '0';
         loading_text.style.margin = '0';
-        loading_text.style.fontFamily = 'monospace';
+        loading_text.style.fontFamily = 'Argon, system-ui';
 
         load_screen.append(load_background, load_canvas, loading_text);
 
