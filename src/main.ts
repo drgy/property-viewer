@@ -1,4 +1,6 @@
 import * as three from 'three';
+import { FXAAShader } from "three/addons/shaders/FXAAShader.js";
+import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
 import data from './data.json';
 import {Viewer} from "./viewer.ts";
 import {Input} from "./input.ts";
@@ -12,9 +14,14 @@ Context.renderer.shadowMap.type = three.PCFSoftShadowMap;
 Context.renderer.toneMapping = three.ACESFilmicToneMapping;
 Context.renderer.toneMappingExposure = 1;
 
+const fxaa = new ShaderPass(FXAAShader);
+
 const resize_observer = new ResizeObserver(() => {
     Context.renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+    Context.composer.setSize(canvas.clientWidth, canvas.clientHeight);
     Context.mobile = canvas.clientWidth <= 600 || canvas.clientHeight <= 600;
+
+    fxaa.uniforms.resolution.value.set(1 / canvas.clientWidth, 1 / canvas.clientHeight);
 
     if (Context.mobile) {
         document.body.classList.add('mobile');
@@ -40,12 +47,14 @@ if (search_params.has('listing')) {
     Context.property = new Property(data[0]);
 }
 
+Context.composer.addPass(fxaa);
+
 const clock = new three.Clock();
 
 function render() {
     viewer.update(clock.getDelta());
 
-    Context.renderer.render(Context.scene, viewer.camera);
+    Context.render();
     requestAnimationFrame(render);
 }
 

@@ -1,4 +1,5 @@
 import * as three from 'three';
+import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import {Property} from "./property.ts";
 import {generate_selection} from "./selection.ts";
 import {Context} from "./context.ts";
@@ -10,11 +11,50 @@ export class Inspector {
     protected _displayed_tints: { scene: three.Scene, camera: three.Camera, container: HTMLCanvasElement }[] = [];
     protected _displayed_materials: { scene: three.Scene, camera: three.Camera, container: HTMLCanvasElement }[] = [];
     protected _name: string;
+    protected _outline_pass: OutlinePass;
 
     constructor(property: Property) {
         this._renderer.toneMapping = three.ACESFilmicToneMapping;
         this._renderer.toneMappingExposure = 1;
         this._renderer.setScissorTest(true);
+
+        const render_canvas = Context.renderer.domElement;
+        this._outline_pass = new OutlinePass(new three.Vector2(render_canvas.width, render_canvas.height), Context.scene, Context.viewer!.camera);
+        this._outline_pass.hiddenEdgeColor.set(0.9, 0.9, 0.9);
+        this._outline_pass.visibleEdgeColor.set(0.118, 0.247, 0.533);
+        this._outline_pass.edgeStrength = 5;
+        this._outline_pass.edgeGlow = 0.5;
+        this._outline_pass.edgeThickness = 5;
+        this._outline_pass.pulsePeriod = 5;
+        this._outline_pass.edgeDetectionMaterial.fragmentShader = `
+            varying vec2 vUv;
+
+            uniform sampler2D maskTexture;
+            uniform vec2 texSize;
+            uniform vec3 visibleEdgeColor;
+            uniform vec3 hiddenEdgeColor;
+            
+            void main() {
+                vec2 invSize = 1.0 / texSize;
+                vec4 uvOffset = vec4(1.0, 0.0, 0.0, 1.0) * vec4(invSize, invSize);
+                vec4 c1 = texture2D(maskTexture, vUv + uvOffset.xy);
+                vec4 c2 = texture2D(maskTexture, vUv - uvOffset.xy);
+                vec4 c3 = texture2D(maskTexture, vUv + uvOffset.yw);
+                vec4 c4 = texture2D(maskTexture, vUv - uvOffset.yw);
+                float diff1 = (c1.r - c2.r)*0.5;
+                float diff2 = (c3.r - c4.r)*0.5;
+                float d = length( vec2(diff1, diff2) );
+                float a1 = min(c1.g, c2.g);
+                float a2 = min(c3.g, c4.g);
+                float visibilityFactor = min(a1, a2);
+                gl_FragColor = vec4(visibleEdgeColor, 1.0 - visibilityFactor > 0.001 ? 1 : 0) * vec4(d);
+            }
+        `;
+        Context.composer.insertPass(this._outline_pass, 1);
+        const observer = new ResizeObserver(() => {
+            this._outline_pass.setSize(render_canvas.width, render_canvas.height);
+        });
+        observer.observe(render_canvas);
 
         const root = document.createElement('div');
         root.classList.add('inspector');
@@ -204,6 +244,10 @@ export class Inspector {
         document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = `${document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!.computedStyleMap().get('height')}px`;
     }
 
+    protected highlight_object(object: three.Mesh) {
+        this._outline_pass.selectedObjects = [ object ];
+    }
+
     protected update_materials(object: three.Mesh) {
         const materials_container = document.querySelector<HTMLDivElement>('.inspector .materials')!;
 
@@ -283,6 +327,7 @@ export class Inspector {
             document.querySelector<HTMLDivElement>('.inspector .customization')!.hidden = false;
             document.querySelector<HTMLDivElement>('.inspector .selection')!.hidden = true;
 
+            this.highlight_object(object);
             this.update_materials(object);
         } else {
             this.show_general();
