@@ -53,8 +53,8 @@ export class Property extends three.Group {
 
         document.body.appendChild(load_screen);
 
-        const width = parseInt(load_screen.computedStyleMap().get('width')!.toString());
-        const height = parseInt(load_screen.computedStyleMap().get('height')!.toString());
+        const width = parseInt(window.getComputedStyle(load_screen).width);
+        const height = parseInt(window.getComputedStyle(load_screen).height);
 
         load_background.width = width;
         load_background.height = height;

@@ -241,7 +241,7 @@ export class Inspector {
 
         this.render();
 
-        document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = `${document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!.computedStyleMap().get('height')}px`;
+        document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = window.getComputedStyle(document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!).height;
     }
 
     protected highlight_object(object: three.Mesh) {
@@ -274,7 +274,7 @@ export class Inspector {
 
         this.render();
 
-        document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = `${document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!.computedStyleMap().get('height')}px`;
+        document.querySelector<HTMLDivElement>('.inspector .tab-container')!.style.height = window.getComputedStyle(document.querySelector<HTMLDivElement>('.inspector .tab-container .customization')!).height;
     }
 
     public show_portfolio_modal() {
@@ -300,7 +300,7 @@ export class Inspector {
         const tab_container = document.querySelector<HTMLDivElement>('.inspector .tab-container')!;
         general_container.hidden = false;
         tab_container.hidden = false;
-        tab_container.style.height = `${general_container.computedStyleMap().get('height')}px`;
+        requestAnimationFrame(() => tab_container.style.height = general_container.style.height);
     }
 
     public show_selection() {
@@ -314,7 +314,7 @@ export class Inspector {
         const tab_container = document.querySelector<HTMLDivElement>('.inspector .tab-container')!;
         selection_container.hidden = false;
         tab_container.hidden = false;
-        tab_container.style.height = `${selection_container.computedStyleMap().get('height')}px`;
+        requestAnimationFrame(() => tab_container.style.height = selection_container.style.height);
     }
 
     public inspect(object: three.Mesh) {
