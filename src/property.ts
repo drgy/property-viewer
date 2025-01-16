@@ -100,21 +100,91 @@ export class Property extends three.Group {
                     this.add(model);
                 }
 
+                const glass_material = new three.ShaderMaterial({
+                    transparent: true,
+                    vertexShader: `
+                        varying vec2 v_uv;
+                        varying vec4 g_position;
+                        
+                        void main() {
+                            v_uv = uv;
+                            g_position = vec4(position, 1.0);
+                            gl_Position = projectionMatrix * modelViewMatrix * g_position;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec2 v_uv;
+                        varying vec4 g_position;
+                    
+                        const vec4 base_color = vec4(0.9, 0.95, 1.0, 0.05);
+                        const vec4 smudge_color = vec4(0.75, 0.85, 0.95, 0.05);
+                    
+                        vec3 hash33(vec3 p3) {
+                            p3 = fract(p3 * vec3(443.8975,397.2973, 491.1871));
+                            p3 += dot(p3, p3.yxz+19.19);
+                            return -1.0 + 2.0 * fract(vec3((p3.x + p3.y)*p3.z, (p3.x+p3.z)*p3.y, (p3.y+p3.z)*p3.x));
+                        }
+                        
+                        float perlin_noise(vec3 p) {
+                            vec3 pi = floor(p);
+                            vec3 pf = p - pi;
+                            
+                            vec3 w = pf * pf * (3.0 - 2.0 * pf);
+                            
+                            return 	mix(
+                                mix(
+                                    mix(dot(pf - vec3(0, 0, 0), hash33(pi + vec3(0, 0, 0))), 
+                                        dot(pf - vec3(1, 0, 0), hash33(pi + vec3(1, 0, 0))),
+                                        w.x),
+                                    mix(dot(pf - vec3(0, 0, 1), hash33(pi + vec3(0, 0, 1))), 
+                                        dot(pf - vec3(1, 0, 1), hash33(pi + vec3(1, 0, 1))),
+                                        w.x),
+                                    w.z),
+                                mix(
+                                    mix(dot(pf - vec3(0, 1, 0), hash33(pi + vec3(0, 1, 0))), 
+                                        dot(pf - vec3(1, 1, 0), hash33(pi + vec3(1, 1, 0))),
+                                        w.x),
+                                    mix(dot(pf - vec3(0, 1, 1), hash33(pi + vec3(0, 1, 1))), 
+                                        dot(pf - vec3(1, 1, 1), hash33(pi + vec3(1, 1, 1))),
+                                        w.x),
+                                    w.z),
+                                w.y);
+                        }
+                    
+                        void main() {
+                            vec4 color = base_color;
+                            
+                            float smudge_factor = smoothstep(0.1, 0.6, perlin_noise(g_position.xyz * 3.0) * 2.0);
+                            
+                            gl_FragColor = mix(base_color, smudge_color, smudge_factor);
+                        }
+                    `
+                });
+
                 this.traverse(object => {
                     if (object instanceof three.Mesh) {
                         object.receiveShadow = true;
 
-                        if (object.material.name !== 'Glass') {
-                            object.castShadow = true;
-                        }
-
                         if (Array.isArray(object.material)) {
-                            for (const material of object.material) {
-                                if (!this._materials.has(material.name)) {
-                                    this._materials.set(material.name, material.clone());
+                            object.castShadow = true;
+
+                            for (let i = 0; i < object.material.length; i++) {
+                                if (object.material[i].name === 'Glass') {
+                                    object.material[i] = glass_material;
+                                }
+
+                                if (!this._materials.has(object.material[i].name)) {
+                                    this._materials.set(object.material[i].name, object.material[i].clone());
                                 }
                             }
                         } else {
+                            if (object.material.name === 'Glass') {
+                                object.castShadow = false;
+                                object.material = glass_material;
+                            } else {
+                                object.castShadow = true;
+                            }
+
                             if (!this._materials.has(object.material.name)) {
                                 this._materials.set(object.material.name, object.material.clone());
                             }

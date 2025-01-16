@@ -55,7 +55,6 @@ function render() {
     viewer.update(clock.getDelta());
 
     Context.render();
-    requestAnimationFrame(render);
 }
 
-requestAnimationFrame(render);
+Context.renderer.setAnimationLoop(render);
