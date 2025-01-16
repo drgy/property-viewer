@@ -1,14 +1,16 @@
 # Property Viewer
 
-This project is a demo application showcasing the interiors of properties for sale in an interactive 3D environment. Built with [Three.js](https://threejs.org/) and [TypeScript](https://www.typescriptlang.org/), it highlights features such as material customization, realistic lighting, and collision detection. The application is designed to provide a modern, configurable platform for exploring properties in real-time.
+This project is a demo application showcasing the interiors of properties for sale in an interactive 3D environment. Built with [Three.js](https://threejs.org/) and [TypeScript](https://www.typescriptlang.org/), it highlights features such as material customization, realistic lighting, collision detection and post-processing. The application is designed to provide a modern, configurable platform for exploring properties in real-time.
 
 ---
 
 ## Features
 
-### Realistic Rendering
+### Customized Rendering
 - **HDR Textures**: Supports high-dynamic-range (HDR) textures for enhanced realism.
 - **Shadow Maps**: Implements shadow mapping for realistic lighting and shading effects.
+- **Post-processing**: Applies visual effects in the post-processing passes.
+- **Procedural materials**: Generates procedural materials with custom GLSL shaders.
 
 ### Customization Options
 - **Material Editing**: Change materials of objects within the property (e.g., walls, furniture) in real-time.
